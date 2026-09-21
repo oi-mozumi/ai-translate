@@ -1,9 +1,11 @@
 # AI Translate - the build robot.
 #
 # A copy of this file lives in the GitHub repository that publishes the
-# ready-made builds, at .github/workflows/build.yml. It never needs changing:
-# every hour it runs build/github.sh from the plugin's latest release on
-# GitLab, and that script decides whether there is anything new to build.
+# ready-made builds, at .github/workflows/build.yml. Every hour it fetches
+# build/github.sh from the plugin's latest release on GitLab and runs it, and
+# that script decides whether there is anything new to build. It uses no
+# ready-made GitHub actions, only what every GitHub runner already has, so
+# nothing in it goes out of date.
 
 name: Build
 
@@ -23,11 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: Build AI Translate
         env:
           GH_TOKEN: ${{ github.token }}
-        run: curl -fsSL https://gitlab.com/oi_mozumi/ai-translate/-/raw/release/build/github.sh | bash
+        run: |
+          curl -fsSL https://gitlab.com/oi_mozumi/ai-translate/-/raw/release/build/github.sh -o github.sh
+          bash github.sh
